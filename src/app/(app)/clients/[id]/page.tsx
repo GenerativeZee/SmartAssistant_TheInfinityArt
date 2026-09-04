@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { BalanceTag } from "@/components/clients/BalanceTag";
 import { NewActionButtons } from "@/components/clients/NewActionButtons";
+import { DeleteClientButton } from "@/components/clients/DeleteClientButton";
 import { ClientTimeline, type TimelineEvent } from "@/components/clients/ClientTimeline";
 import { createClient } from "@/lib/supabase/server";
 import { formatPhone, telHref } from "@/lib/phone";
@@ -142,6 +143,10 @@ export default async function ClientDetailPage({
           {S.client.timeline}
         </h2>
         <ClientTimeline events={events} />
+      </div>
+
+      <div className="px-4 pb-6 pt-2 flex justify-center">
+        <DeleteClientButton clientId={client.id} clientName={client.name} />
       </div>
     </>
   );

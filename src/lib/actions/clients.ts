@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient, getProfile } from "@/lib/supabase/server";
 import { S } from "@/lib/strings";
 import { quickAddSchema, type WhatNext, type RequirementKey } from "@/lib/validation/clients";
+import type { ActionResult } from "@/lib/actions/quotations";
 
 const REQ_LABEL: Record<RequirementKey, string> = {
   signage: S.requirementChips.signage,
@@ -146,4 +147,38 @@ export async function quickAdd(raw: unknown): Promise<QuickAddResult> {
   revalidatePath("/aaj");
   revalidatePath(`/clients/${clientId}`);
   return { ok: true, clientId, name: input.name, existed };
+}
+
+/**
+ * Permanently deletes a client. Their interactions and follow-ups go with
+ * them (cascade); quotations, jobs and payments are protected at the
+ * database level (ON DELETE RESTRICT) — a client with real business history
+ * can't be casually deleted, so we check first and give a clear reason
+ * rather than surfacing a raw foreign-key error.
+ */
+export async function deleteClient(id: string): Promise<ActionResult> {
+  const profile = await getProfile();
+  if (!profile) return { ok: false, error: "Please sign in" };
+  const supabase = await createClient();
+
+  const [{ count: quotationCount }, { count: jobCount }, { count: paymentCount }] = await Promise.all([
+    supabase.from("quotations").select("id", { count: "exact", head: true }).eq("client_id", id),
+    supabase.from("jobs").select("id", { count: "exact", head: true }).eq("client_id", id),
+    supabase.from("payments").select("id", { count: "exact", head: true }).eq("client_id", id),
+  ]);
+
+  const blockers: string[] = [];
+  if (quotationCount) blockers.push(`${quotationCount} quotation${quotationCount === 1 ? "" : "s"}`);
+  if (jobCount) blockers.push(`${jobCount} job${jobCount === 1 ? "" : "s"}`);
+  if (paymentCount) blockers.push(`${paymentCount} payment${paymentCount === 1 ? "" : "s"}`);
+  if (blockers.length > 0) {
+    return { ok: false, error: `Can't delete — this client has ${blockers.join(", ")}.` };
+  }
+
+  const { error } = await supabase.from("clients").delete().eq("id", id);
+  if (error) return { ok: false, error: error.message };
+
+  revalidatePath("/clients");
+  revalidatePath("/aaj");
+  return { ok: true };
 }
