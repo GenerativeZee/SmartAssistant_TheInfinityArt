@@ -21,7 +21,7 @@ export default async function JobDetailPage({
     supabase
       .from("shops")
       .select(
-        "name, address, city, state, pincode, phone, email, gstin, upi_id, built_by_credit, default_greeting",
+        "name, address, city, state, pincode, phone, email, gstin, upi_id, built_by_credit, default_greeting, message_templates",
       )
       .single(),
     supabase.from("job_financials").select("*").eq("job_id", id).maybeSingle(),
@@ -63,6 +63,7 @@ export default async function JobDetailPage({
           upiId: shop.upi_id,
           builtByCredit: shop.built_by_credit,
           defaultGreeting: shop.default_greeting,
+          messageTemplates: shop.message_templates,
         }}
         financials={{
           total: Number(financials?.total_amount ?? job.total_amount),

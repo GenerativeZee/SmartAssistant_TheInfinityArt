@@ -14,7 +14,7 @@ import { useToast } from "@/components/ui/Toast";
 import { advanceJobStage, deliverJob, cancelJob } from "@/lib/actions/jobs";
 import { formatMoney } from "@/lib/money";
 import { fmtDay } from "@/lib/dates";
-import { waLink, templates } from "@/lib/messages";
+import { waLink, templates, type MessageTemplateOverrides } from "@/lib/messages";
 import { S } from "@/lib/strings";
 import type { Stage } from "@/lib/validation/jobs";
 
@@ -40,6 +40,7 @@ interface JobDetailProps {
     upiId: string | null;
     builtByCredit: string | null;
     defaultGreeting: string;
+    messageTemplates?: MessageTemplateOverrides;
   };
   financials: { total: number; received: number; balance: number };
   attachments: AttachmentItem[];
@@ -87,12 +88,15 @@ export function JobDetail({ job, client, shop, financials, attachments, isLate }
       }
       setDeliveryOpen(false);
       toast("Marked delivered");
-      const message = templates.delivery({
-        name: client.name,
-        greeting: shop.defaultGreeting,
-        shopName: shop.name,
-        reviewLink: "[add your Google review link here]",
-      });
+      const message = templates.delivery(
+        {
+          name: client.name,
+          greeting: shop.defaultGreeting,
+          shopName: shop.name,
+          reviewLink: "[add your Google review link here]",
+        },
+        shop.messageTemplates?.delivery,
+      );
       setWaMessage(message);
       setWaOpen(true);
       router.refresh();

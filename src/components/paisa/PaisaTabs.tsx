@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { PaymentSheet } from "./PaymentSheet";
+import type { MessageTemplateOverrides } from "@/lib/messages";
 import { ageingLabel, ageingTone } from "@/lib/ageing";
 import { formatMoney } from "@/lib/money";
 import { fmtDay } from "@/lib/dates";
@@ -36,6 +37,7 @@ interface ShopInfo {
   upiId: string | null;
   builtByCredit: string | null;
   defaultGreeting: string;
+  messageTemplates?: MessageTemplateOverrides;
 }
 
 const TONE_CLASS: Record<"risk" | "owed" | "faint", string> = {

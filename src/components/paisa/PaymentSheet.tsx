@@ -9,7 +9,7 @@ import { WaPreview } from "@/components/whatsapp/WaPreview";
 import { useToast } from "@/components/ui/Toast";
 import { formatMoney } from "@/lib/money";
 import { todayIST } from "@/lib/dates";
-import { templates } from "@/lib/messages";
+import { templates, type MessageTemplateOverrides } from "@/lib/messages";
 import { S } from "@/lib/strings";
 import {
   recordPayment,
@@ -44,6 +44,7 @@ interface ShopInfo {
   upiId: string | null;
   builtByCredit: string | null;
   defaultGreeting: string;
+  messageTemplates?: MessageTemplateOverrides;
 }
 
 /**
@@ -177,14 +178,17 @@ function PaymentSheetBody({
         const url = await sharePdf(doc, "pdfs", `${res.paymentId}.pdf`);
         await setPaymentPdfUrl(res.paymentId, url);
 
-        const message = templates.receipt({
-          name: client.name,
-          greeting: shop.defaultGreeting,
-          shopName: shop.name,
-          amount: amt,
-          balance: balanceAfter,
-          link: url,
-        });
+        const message = templates.receipt(
+          {
+            name: client.name,
+            greeting: shop.defaultGreeting,
+            shopName: shop.name,
+            amount: amt,
+            balance: balanceAfter,
+            link: url,
+          },
+          shop.messageTemplates?.receipt,
+        );
         onClose();
         onReceiptReady(message, client.phone);
       } catch {

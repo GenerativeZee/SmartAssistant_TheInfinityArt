@@ -20,6 +20,7 @@ import { ItemRow } from "./ItemRow";
 import { ServicePickerSheet } from "./ServicePickerSheet";
 import { TotalsBar } from "./TotalsBar";
 import { newLineKey, type BuilderLine, type ServiceOption } from "./types";
+import type { MessageTemplateOverrides } from "@/lib/messages";
 
 interface ShopInfo {
   name: string;
@@ -35,6 +36,7 @@ interface ShopInfo {
   builtByCredit: string | null;
   defaultGreeting: string;
   sqftRounding: SqftRounding;
+  messageTemplates?: MessageTemplateOverrides;
 }
 
 interface ClientInfo {
@@ -284,14 +286,17 @@ export function QuotationBuilder({
         const url = await sharePdf(doc, "pdfs", path);
         await setQuotationPdfUrl(savedId, url);
 
-        const message = templates.quotation({
-          name: client.name,
-          greeting: shop.defaultGreeting,
-          shopName: shop.name,
-          requirement: lines[0]?.description ?? "your order",
-          total: totals.total,
-          link: url,
-        });
+        const message = templates.quotation(
+          {
+            name: client.name,
+            greeting: shop.defaultGreeting,
+            shopName: shop.name,
+            requirement: lines[0]?.description ?? "your order",
+            total: totals.total,
+            link: url,
+          },
+          shop.messageTemplates?.quotation,
+        );
         setWaMessage(message);
         setWaOpen(true);
       } catch {

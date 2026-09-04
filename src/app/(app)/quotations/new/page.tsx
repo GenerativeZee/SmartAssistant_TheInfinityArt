@@ -37,7 +37,7 @@ export default async function NewQuotationPage({
     supabase
       .from("shops")
       .select(
-        "name, legal_name, address, city, state, pincode, phone, email, gstin, upi_id, built_by_credit, default_greeting, sqft_rounding, quotation_terms",
+        "name, legal_name, address, city, state, pincode, phone, email, gstin, upi_id, built_by_credit, default_greeting, sqft_rounding, quotation_terms, message_templates",
       )
       .single(),
     supabase
@@ -73,6 +73,7 @@ export default async function NewQuotationPage({
           upiId: shop.upi_id,
           builtByCredit: shop.built_by_credit,
           defaultGreeting: shop.default_greeting,
+          messageTemplates: shop.message_templates,
           sqftRounding: shop.sqft_rounding,
         }}
         client={client}

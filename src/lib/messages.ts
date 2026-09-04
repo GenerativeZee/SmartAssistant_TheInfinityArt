@@ -5,8 +5,11 @@
  * his own WhatsApp. A deep link cannot attach a file, so anything with a PDF
  * puts a public Storage URL in the text (see lib/share-pdf.ts, added in M3).
  *
- * Templates live here — never inline in components — because Shahid will want to
- * reword them, and every message opens in an editable preview before it is sent.
+ * Templates live here — never inline in components — because Shahid can reword
+ * them from Settings → Message templates (M6+): each one below is the default,
+ * overridden per-shop via `shops.message_templates` (a plain {key: string} jsonb
+ * column — an empty/missing key just falls back to the default here). Every
+ * message opens in an editable preview before it is sent, regardless.
  */
 import { normalizePhone } from "./phone";
 import { formatMoney } from "./money";
@@ -26,30 +29,79 @@ export interface MsgCtx {
   shopName: string;
 }
 
+/** Overrides stored on shops.message_templates, keyed the same as DEFAULT_TEMPLATES. */
+export type MessageTemplateOverrides = Partial<Record<keyof typeof DEFAULT_TEMPLATES, string>>;
+
+export const DEFAULT_TEMPLATES = {
+  quotation:
+    "{name} {greeting}, aapke {requirement} ki quotation bhej raha hoon — total {total}. PDF yahan hai: {link}. Koi change chahiye to bata dijiyega. — {shop_name}",
+  paymentReminder:
+    "{name} {greeting}, {job_title} ka kaam {delivered_date} ko complete ho gaya tha. {balance} baaki hai — jab convenient ho bhej dijiyega. UPI: {upi_id}. Invoice: {link}",
+  delivery:
+    "{name} {greeting}, aapka kaam ready hai. Shukriya! Agar sab theek laga ho to ek review zaroor dijiyega: {review_link}",
+  receipt: "{amount} receive ho gaya, shukriya. Receipt: {link}. Ab baaki {balance}.",
+} as const;
+
+export const TEMPLATE_LABELS: Record<keyof typeof DEFAULT_TEMPLATES, string> = {
+  quotation: "Quotation",
+  paymentReminder: "Payment reminder",
+  delivery: "Delivery",
+  receipt: "Receipt",
+};
+
+/** The placeholders each template accepts, shown as a hint next to the editor. */
+export const TEMPLATE_PLACEHOLDERS: Record<keyof typeof DEFAULT_TEMPLATES, string[]> = {
+  quotation: ["name", "greeting", "shop_name", "requirement", "total", "link"],
+  paymentReminder: ["name", "greeting", "job_title", "delivered_date", "balance", "upi_id", "link"],
+  delivery: ["name", "greeting", "review_link"],
+  receipt: ["amount", "link", "balance"],
+};
+
+function fill(template: string, vars: Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (match, key: string) => vars[key] ?? match);
+}
+
 export const templates = {
   hello: (c: MsgCtx) => `${c.name} ${c.greeting}, ${c.shopName} se baat kar raha hoon.`,
 
   quotation: (
     c: MsgCtx & { requirement: string; total: number; link: string },
+    override?: string,
   ) =>
-    `${c.name} ${c.greeting}, aapke ${c.requirement} ki quotation bhej raha hoon — total ${formatMoney(
-      c.total,
-    )}. PDF yahan hai: ${c.link}. Koi change chahiye to bata dijiyega. — ${c.shopName}`,
+    fill(override || DEFAULT_TEMPLATES.quotation, {
+      name: c.name,
+      greeting: c.greeting,
+      shop_name: c.shopName,
+      requirement: c.requirement,
+      total: formatMoney(c.total),
+      link: c.link,
+    }),
 
   paymentReminder: (
     c: MsgCtx & { jobTitle: string; deliveredOn: string; balance: number; upiId: string; link: string },
+    override?: string,
   ) =>
-    `${c.name} ${c.greeting}, ${c.jobTitle} ka kaam ${fmtDay(
-      c.deliveredOn,
-    )} ko complete ho gaya tha. ${formatMoney(
-      c.balance,
-    )} baaki hai — jab convenient ho bhej dijiyega. UPI: ${c.upiId}. Invoice: ${c.link}`,
+    fill(override || DEFAULT_TEMPLATES.paymentReminder, {
+      name: c.name,
+      greeting: c.greeting,
+      job_title: c.jobTitle,
+      delivered_date: fmtDay(c.deliveredOn),
+      balance: formatMoney(c.balance),
+      upi_id: c.upiId || "-",
+      link: c.link,
+    }),
 
-  delivery: (c: MsgCtx & { reviewLink: string }) =>
-    `${c.name} ${c.greeting}, aapka kaam ready hai. Shukriya! Agar sab theek laga ho to ek review zaroor dijiyega: ${c.reviewLink}`,
+  delivery: (c: MsgCtx & { reviewLink: string }, override?: string) =>
+    fill(override || DEFAULT_TEMPLATES.delivery, {
+      name: c.name,
+      greeting: c.greeting,
+      review_link: c.reviewLink,
+    }),
 
-  receipt: (c: MsgCtx & { amount: number; balance: number; link: string }) =>
-    `${formatMoney(c.amount)} receive ho gaya, shukriya. Receipt: ${c.link}. Ab baaki ${formatMoney(
-      c.balance,
-    )}.`,
+  receipt: (c: MsgCtx & { amount: number; balance: number; link: string }, override?: string) =>
+    fill(override || DEFAULT_TEMPLATES.receipt, {
+      amount: formatMoney(c.amount),
+      link: c.link,
+      balance: formatMoney(c.balance),
+    }),
 };

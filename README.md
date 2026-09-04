@@ -12,11 +12,10 @@ deploys to Vercel.
 
 ## Milestone status
 
-**Phase 1 (M1–M6) is complete.** One gap called out from the spec: full
-Settings editing beyond the rate card — shop-profile editing, logo upload,
-message-template editing — was never assigned to a milestone and is still
-"coming soon." Everything else in §12's acceptance checklist is built and
-verified against the live database.
+**Phase 1 (M1–M6) is complete**, plus post-launch additions: client delete,
+full Settings editing (shop profile, logo/UPI QR upload, editable WhatsApp
+message templates), and expense capture. Everything in §12's acceptance
+checklist is built and verified against the live database.
 
 | | | |
 |---|---|---|

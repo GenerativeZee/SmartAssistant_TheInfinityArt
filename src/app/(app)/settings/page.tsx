@@ -6,65 +6,62 @@ import { S } from "@/lib/strings";
 
 export const metadata = { title: S.settings.title };
 
+const LINKS: { href: string; label: string; external?: boolean }[] = [
+  { href: "/settings/profile", label: S.settings.shopProfile },
+  { href: "/settings/rate-card", label: S.settings.rateCard },
+  { href: "/settings/templates", label: S.settings.templates },
+  { href: "/settings/expenses", label: "Expenses" },
+  { href: "/quotations", label: "All quotations" },
+  { href: "/api/export", label: S.settings.exportExcel, external: true },
+];
+
 export default async function SettingsPage() {
   const supabase = await createClient();
   const profile = await getProfile();
-  const { data: shop } = await supabase.from("shops").select("*").single();
-
-  const rows: [string, string | null | undefined][] = [
-    [S.settings.shopProfile, shop?.name],
-    ["Legal name", shop?.legal_name],
-    ["Address", [shop?.address, shop?.city, shop?.state, shop?.pincode].filter(Boolean).join(", ")],
-    ["Phone", shop?.phone],
-    ["WhatsApp", shop?.whatsapp_number],
-    [S.settings.gstin, shop?.gstin],
-    [S.settings.upiId, shop?.upi_id],
-    [S.settings.gstRate, shop ? `${shop.default_gst_rate}%` : null],
-    [S.settings.sqftRounding, shop?.sqft_rounding],
-    [S.settings.greeting, shop?.default_greeting],
-    ["Signed in as", profile?.email],
-  ];
+  const { data: shop } = await supabase.from("shops").select("name, logo_url").single();
 
   return (
     <>
       <ScreenHeader title={S.settings.title} hideSettings />
       <div className="px-4 py-4">
-        <div className="rounded-[var(--radius-card)] border border-hairline bg-surface divide-y divide-hairline">
-          {rows.map(([label, value]) => (
-            <div key={label} className="flex items-center justify-between gap-4 px-4 py-3">
-              <span className="text-sm text-ink-soft">{label}</span>
-              <span className="text-sm text-ink text-right">{value || "—"}</span>
+        <div className="rounded-[var(--radius-card)] border border-hairline bg-surface p-4 flex items-center gap-3">
+          {shop?.logo_url ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={shop.logo_url} alt={shop.name} className="h-12 w-12 rounded-[10px] object-cover" />
+          ) : (
+            <div className="h-12 w-12 rounded-[10px] bg-ink grid place-items-center text-accent-wash text-xs font-bold">
+              INF
             </div>
-          ))}
+          )}
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-ink truncate">{shop?.name ?? S.appName}</p>
+            <p className="text-xs text-ink-faint truncate">{profile?.email}</p>
+          </div>
         </div>
 
         <div className="mt-4 flex flex-col gap-2">
-          <Link
-            href="/quotations"
-            className="flex items-center justify-between rounded-[var(--radius-card)] border border-hairline bg-surface px-4 py-3 text-sm text-ink"
-          >
-            All quotations
-            <span className="text-ink-faint">→</span>
-          </Link>
-          <Link
-            href="/settings/rate-card"
-            className="flex items-center justify-between rounded-[var(--radius-card)] border border-hairline bg-surface px-4 py-3 text-sm text-ink"
-          >
-            {S.settings.rateCard}
-            <span className="text-ink-faint">→</span>
-          </Link>
-          <a
-            href="/api/export"
-            className="flex items-center justify-between rounded-[var(--radius-card)] border border-hairline bg-surface px-4 py-3 text-sm text-ink"
-          >
-            {S.settings.exportExcel}
-            <span className="text-ink-faint">↓</span>
-          </a>
+          {LINKS.map((l) =>
+            l.external ? (
+              <a
+                key={l.href}
+                href={l.href}
+                className="flex items-center justify-between rounded-[var(--radius-card)] border border-hairline bg-surface px-4 py-3 text-sm text-ink"
+              >
+                {l.label}
+                <span className="text-ink-faint">↓</span>
+              </a>
+            ) : (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="flex items-center justify-between rounded-[var(--radius-card)] border border-hairline bg-surface px-4 py-3 text-sm text-ink"
+              >
+                {l.label}
+                <span className="text-ink-faint">→</span>
+              </Link>
+            ),
+          )}
         </div>
-
-        <p className="mt-4 text-xs text-ink-faint">
-          Full profile editing, logo upload and message-template editing are coming soon.
-        </p>
 
         <form action={signOut} className="mt-8">
           <button
