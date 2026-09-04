@@ -93,11 +93,11 @@ export function VoiceNote({
           <span className="flex items-center gap-2 text-ink">
             Voice note ✓
             <button type="button" onClick={discard} className="text-owed underline">
-              Hata do
+              Remove
             </button>
           </span>
         )}
-        {state === "error" && <span className="text-owed">Mic nahi mila</span>}
+        {state === "error" && <span className="text-owed">Microphone not available</span>}
       </div>
     </div>
   );

@@ -17,7 +17,7 @@ export default async function PaisaPage() {
         title={S.paisa.title}
         subtitle={`${S.aaj.outstanding} ${formatMoney(outstanding)}`}
       />
-      <Placeholder milestone="M5" note="Aana hai (ageing) · Aaya (receipts) — paisa tracking yahan aayega." />
+      <Placeholder note="Receivables by ageing bucket and a running log of payments received will appear here." />
     </>
   );
 }

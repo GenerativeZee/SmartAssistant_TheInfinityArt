@@ -18,14 +18,14 @@ export async function signIn(_prev: LoginState, formData: FormData): Promise<Log
     password: formData.get("password"),
     next: formData.get("next") || undefined,
   });
-  if (!parsed.success) return { error: "Email ya password galat hai" };
+  if (!parsed.success) return { error: "Incorrect email or password" };
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({
     email: parsed.data.email,
     password: parsed.data.password,
   });
-  if (error) return { error: "Email ya password galat hai" };
+  if (error) return { error: "Incorrect email or password" };
 
   redirect(parsed.data.next ?? "/aaj");
 }

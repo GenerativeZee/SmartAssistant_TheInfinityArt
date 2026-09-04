@@ -14,8 +14,8 @@ export default async function JobsPage() {
 
   return (
     <>
-      <ScreenHeader title={S.job.board} subtitle={`${count ?? 0} chal rahe hain`} />
-      <Placeholder milestone="M4" note="Late · Aaj · Is hafte · Baad mein — job board yahan aayega." />
+      <ScreenHeader title={S.job.board} subtitle={`${count ?? 0} in progress`} />
+      <Placeholder note="Grouped by Late, Today, This week and Later, with a tap-to-advance stage tracker." />
     </>
   );
 }

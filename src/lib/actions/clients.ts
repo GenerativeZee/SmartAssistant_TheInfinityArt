@@ -17,8 +17,8 @@ const REQ_LABEL: Record<RequirementKey, string> = {
 
 const FOLLOWUP_TITLE: Record<Exclude<WhatNext, "nothing">, string> = {
   call_back: "Call back",
-  quotation: "Quotation bhejni hai",
-  demo: "Demo dikhana",
+  quotation: "Send quotation",
+  demo: "Show demo",
 };
 
 export type QuickAddResult =
@@ -50,7 +50,7 @@ export async function quickAdd(raw: unknown): Promise<QuickAddResult> {
   const input = parsed.data;
 
   const profile = await getProfile();
-  if (!profile) return { ok: false, error: "Login chahiye" };
+  if (!profile) return { ok: false, error: "Please sign in" };
   const supabase = await createClient();
   const shop_id = profile.shop_id;
   const now = new Date().toISOString();
@@ -102,7 +102,7 @@ export async function quickAdd(raw: unknown): Promise<QuickAddResult> {
   // 2. log the visit
   const reqLabels = input.requirements.map((r) => REQ_LABEL[r]);
   const summary =
-    reqLabels.length > 0 ? `Kaam: ${reqLabels.join(", ")}` : "Client se baat hui";
+    reqLabels.length > 0 ? `Interested in: ${reqLabels.join(", ")}` : "Client visit logged";
   const { error: iErr } = await supabase.from("interactions").insert({
     shop_id,
     client_id: clientId,

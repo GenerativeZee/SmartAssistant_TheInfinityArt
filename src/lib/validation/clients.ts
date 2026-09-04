@@ -19,8 +19,8 @@ export const quickAddSchema = z.object({
   phone: z
     .string()
     .transform(normalizePhone)
-    .refine(isValidPhone, "10 digit ka sahi number daaliye"),
-  name: z.string().trim().min(1, "Naam likhiye").max(120),
+    .refine(isValidPhone, "Enter a valid 10-digit number"),
+  name: z.string().trim().min(1, "Enter a name").max(120),
   requirements: z.array(z.enum(REQUIREMENT_KEYS)).max(7).default([]),
   whatNext: z.enum(WHAT_NEXT).default("nothing"),
   followUpDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),

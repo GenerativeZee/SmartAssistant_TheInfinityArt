@@ -8,10 +8,10 @@ export function NewActionButtons() {
   const toast = useToast();
   return (
     <div className="grid grid-cols-2 gap-2 px-4 mt-3">
-      <Button variant="surface" onClick={() => toast("Quotation builder M3 me aayega")}>
+      <Button variant="surface" onClick={() => toast("Quotation builder is coming soon")}>
         {S.client.newQuotation}
       </Button>
-      <Button variant="surface" onClick={() => toast("Job M4 me aayega")}>
+      <Button variant="surface" onClick={() => toast("Job creation is coming soon")}>
         {S.client.newJob}
       </Button>
     </div>

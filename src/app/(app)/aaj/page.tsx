@@ -13,7 +13,7 @@ export default async function AajPage() {
   return (
     <>
       <ScreenHeader title={S.aaj.title} subtitle={`${shop?.name ?? S.appName} · ${fmtDay(todayIST())}`} />
-      <Placeholder milestone="M6" note="Call karna hai · Paisa baaki · Aaj/kal delivery — yahan aayega." />
+      <Placeholder note="Calls due, payments outstanding, and today's deliveries will appear here." />
     </>
   );
 }

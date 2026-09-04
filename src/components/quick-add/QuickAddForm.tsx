@@ -141,7 +141,7 @@ export function QuickAddForm({
         />
       </Field>
       {existing && (
-        <p className="-mt-3 text-xs text-accent">Purana client khula · {existing.name}</p>
+        <p className="-mt-3 text-xs text-accent">Existing client · {existing.name}</p>
       )}
 
       {/* 2. name */}
@@ -149,7 +149,7 @@ export function QuickAddForm({
         <TextInput
           value={draft.name}
           onChange={(e) => patch({ name: e.target.value })}
-          placeholder="Naam"
+          placeholder="Full name"
         />
       </Field>
 

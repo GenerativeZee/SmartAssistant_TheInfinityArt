@@ -63,7 +63,7 @@ async function ClientList({ searchParams }: { searchParams: Promise<{ q?: string
   if (!clients || clients.length === 0) {
     return (
       <div className="px-4 py-16 text-center text-sm text-ink-soft">
-        {q ? "Koi client nahi mila." : S.common.empty}
+        {q ? "No clients matched." : S.common.empty}
       </div>
     );
   }
@@ -86,7 +86,6 @@ async function ClientList({ searchParams }: { searchParams: Promise<{ q?: string
               href={telHref(c.phone)}
               aria-label={S.actions.call}
               className="grid h-9 w-9 place-items-center rounded-full text-ink-soft hover:bg-surface-sunken"
-              onClick={(e) => e.stopPropagation()}
             >
               <IconPhone width={18} height={18} />
             </a>
@@ -96,7 +95,6 @@ async function ClientList({ searchParams }: { searchParams: Promise<{ q?: string
               rel="noreferrer"
               aria-label={S.actions.whatsapp}
               className="grid h-9 w-9 place-items-center rounded-full text-ink-soft hover:bg-surface-sunken"
-              onClick={(e) => e.stopPropagation()}
             >
               <IconChat width={18} height={18} />
             </a>

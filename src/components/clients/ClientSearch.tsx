@@ -26,7 +26,7 @@ export function ClientSearch() {
     <TextInput
       type="search"
       inputMode="search"
-      placeholder="Naam ya phone dhoondo"
+      placeholder="Search by name or phone"
       value={value}
       onChange={(e) => onChange(e.target.value)}
       className="bg-surface"

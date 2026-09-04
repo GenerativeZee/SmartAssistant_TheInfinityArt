@@ -38,7 +38,7 @@ export default async function SettingsPage() {
         </div>
 
         <p className="mt-4 text-xs text-ink-faint">
-          Full editing, logo upload, rate card aur Excel export M6 me aayega.
+          Full editing, logo upload, the rate card editor and the Excel export are coming soon.
         </p>
 
         <form action={signOut} className="mt-8">

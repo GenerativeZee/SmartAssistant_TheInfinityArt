@@ -1,8 +1,10 @@
-export function Placeholder({ milestone, note }: { milestone: string; note: string }) {
+import { S } from "@/lib/strings";
+
+export function Placeholder({ note }: { note: string }) {
   return (
-    <div className="px-4 py-16 text-center">
-      <p className="num text-xs tracking-widest text-accent">{milestone}</p>
-      <p className="mt-2 text-sm text-ink-soft">{note}</p>
+    <div className="px-6 py-20 text-center">
+      <p className="head text-sm text-ink-soft">{S.common.comingSoon}</p>
+      <p className="mt-2 text-sm text-ink-faint max-w-xs mx-auto">{note}</p>
     </div>
   );
 }

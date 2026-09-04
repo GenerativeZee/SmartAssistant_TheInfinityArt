@@ -6,7 +6,7 @@ import { ClientTimeline, type TimelineEvent } from "@/components/clients/ClientT
 import { createClient } from "@/lib/supabase/server";
 import { formatPhone, telHref } from "@/lib/phone";
 import { formatMoney } from "@/lib/money";
-import { waLink } from "@/lib/messages";
+import { waLink, templates } from "@/lib/messages";
 import { S } from "@/lib/strings";
 import { IconPhone, IconChat } from "@/components/ui/icons";
 
@@ -82,7 +82,7 @@ export default async function ClientDetailPage({
   ].sort((a, b) => (a.at < b.at ? 1 : -1));
 
   const greeting = shop?.default_greeting ?? "ji";
-  const message = `${client.name} ${greeting}, The Infinity Art se baat kar raha hoon.`;
+  const message = templates.hello({ name: client.name, greeting, shopName: "The Infinity Art" });
 
   return (
     <>

@@ -22,6 +22,8 @@
 | D12 | PWA: Serwist caches the app shell + static assets only. Offline = shell opens + in-progress forms survive via localStorage. No offline data sync. | 2026-09-04 | §3/§10. |
 | D13 | Fonts: Archivo (headings/names), JetBrains Mono (all numbers/dates/doc numbers, tabular). | 2026-09-04 | §9. |
 | D14 | Excel export = server action using `exceljs`, one sheet per table, shop-scoped. | 2026-09-04 | §8.7. |
+| D15 | App UI language switched from Hinglish to **English** throughout — screen titles, labels, buttons, validation, empty states. | 2026-09-04 | Client said Shahid is comfortable reading English and asked for it explicitly. **Overrides §9 "Hinglish for anything he acts on."** The outbound WhatsApp templates in `lib/messages.ts` (§7) are left Hinglish — those are written to his customers, a different audience, and §7's exact wording was spec'd deliberately; flag if that should change too. |
+| D16 | Coming-soon placeholders (Jobs/Paisa boards, Aaj Ka Kaam) drop the internal milestone code ("M4", "M6") from the visible UI — shown only as a quiet "Coming soon" + one plain-English line. Login screen redesigned with a mark + card treatment instead of a bare form. | 2026-09-04 | "Make the app look professional" — milestone jargon reads as a dev tool, not a product, to an end user. |
 
 ---
 
@@ -132,7 +134,7 @@ Bottom tab bar: **Aaj · Clients · Jobs · Paisa**. Floating `+` on every tab �
 - **Palette.** Ink `#0F1518` on paper `#F4F7F8`, white surfaces. Accent: process cyan `#0083B8`. Semantic ladder: cyan = running/on track, amber `#B67A00` = at risk, magenta `#C4005F` = overdue & money owed, ink = done. No fourth accent. Light + dark via CSS variables: full light palette on `:root`, override tokens only in `@media (prefers-color-scheme: dark)`.
 - **Type.** Wide grotesque for headings/names (Archivo). Mono with tabular figures for every number/amount/date/doc number.
 - **Density.** 44px min tap targets, tight vertical rhythm. Amounts right-aligned. Dates `04 Sep`, never `2026-09-04`.
-- **Language.** Hinglish for anything he acts on (titles, headers, buttons). English for data. Strings in `lib/strings.ts`.
+- **Language.** English throughout the app UI (D15). Outbound WhatsApp templates stay Hinglish — a different audience. Strings in `lib/strings.ts`.
 - **Avoid.** Purple/blue gradient headers, card shadows on everything, emoji section icons, generic SaaS empty states, default shadcn styling.
 
 ## 10. Non-functional
