@@ -27,6 +27,7 @@ export function ClientTimeline({ events }: { events: TimelineEvent[] }) {
     <ol className="px-4 py-4 space-y-0">
       {events.map((e, i) => {
         const href = e.kind === "quotation" ? `/quotations/${e.id}` : e.kind === "job" ? `/jobs/${e.id}` : null;
+        const rowDetail = detail(e);
         const Row = (
           <div className="flex items-baseline justify-between gap-2">
             <p className="text-sm text-ink">{title(e)}</p>
@@ -46,7 +47,7 @@ export function ClientTimeline({ events }: { events: TimelineEvent[] }) {
             ) : (
               Row
             )}
-            {detail(e) && <p className="text-xs text-ink-faint mt-0.5">{detail(e)}</p>}
+            {rowDetail && <div className="text-xs text-ink-faint mt-0.5">{rowDetail}</div>}
           </li>
         );
       })}
@@ -74,10 +75,17 @@ function title(e: TimelineEvent) {
   }
 }
 
-function detail(e: TimelineEvent) {
+function detail(e: TimelineEvent): React.ReactNode {
   switch (e.kind) {
     case "interaction":
-      return e.type === "voice" ? "Voice note" : e.summary;
+      if (e.type === "voice") {
+        return e.voiceUrl ? (
+          <audio controls preload="none" src={e.voiceUrl} className="h-8 mt-1 max-w-full" />
+        ) : (
+          "Voice note"
+        );
+      }
+      return e.summary;
     case "quotation":
       return formatMoney(e.total);
     case "job":
