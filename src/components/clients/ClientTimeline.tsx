@@ -26,7 +26,7 @@ export function ClientTimeline({ events }: { events: TimelineEvent[] }) {
   return (
     <ol className="px-4 py-4 space-y-0">
       {events.map((e, i) => {
-        const href = e.kind === "quotation" ? `/quotations/${e.id}` : null;
+        const href = e.kind === "quotation" ? `/quotations/${e.id}` : e.kind === "job" ? `/jobs/${e.id}` : null;
         const Row = (
           <div className="flex items-baseline justify-between gap-2">
             <p className="text-sm text-ink">{title(e)}</p>

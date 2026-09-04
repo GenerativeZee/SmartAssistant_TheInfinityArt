@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { QuotationBuilder } from "@/components/quotations/QuotationBuilder";
 import { createClient } from "@/lib/supabase/server";
+import { todayIST } from "@/lib/dates";
 import { S } from "@/lib/strings";
 import type { BuilderLine } from "@/components/quotations/types";
 
@@ -79,6 +80,7 @@ export default async function QuotationDetailPage({
         quotationNumber={quotation.number ?? undefined}
         status={quotation.status}
         sentAt={quotation.sent_at}
+        today={todayIST()}
         initialLines={initialLines}
         initialDiscount={Number(quotation.discount)}
         initialNotes={quotation.notes ?? ""}

@@ -12,7 +12,10 @@ import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 import { Sheet } from "@/components/ui/Sheet";
 import { WaPreview } from "@/components/whatsapp/WaPreview";
+import { WonSheet } from "@/components/jobs/WonSheet";
 import { createQuotation, updateQuotation, setQuotationPdfUrl, markQuotationSent, markQuotationLost } from "@/lib/actions/quotations";
+import { markQuotationWon } from "@/lib/actions/jobs";
+import type { Stage } from "@/lib/validation/jobs";
 import { ItemRow } from "./ItemRow";
 import { ServicePickerSheet } from "./ServicePickerSheet";
 import { TotalsBar } from "./TotalsBar";
@@ -59,6 +62,7 @@ export function QuotationBuilder({
   quotationNumber: initialNumber,
   status,
   sentAt,
+  today,
   initialLines,
   initialDiscount = 0,
   initialNotes = "",
@@ -71,6 +75,7 @@ export function QuotationBuilder({
   quotationNumber?: string;
   status?: string;
   sentAt?: string | null;
+  today: string;
   initialLines: BuilderLine[];
   initialDiscount?: number;
   initialNotes?: string;
@@ -89,6 +94,7 @@ export function QuotationBuilder({
 
   const [pickerOpen, setPickerOpen] = useState(false);
   const [lostOpen, setLostOpen] = useState(false);
+  const [wonOpen, setWonOpen] = useState(false);
   const [waOpen, setWaOpen] = useState(false);
   const [waMessage, setWaMessage] = useState("");
   const [busyAction, setBusyAction] = useState<"draft" | "preview" | "whatsapp" | null>(null);
@@ -306,6 +312,20 @@ export function QuotationBuilder({
     });
   }
 
+  function handleMarkWon(input: { promisedDate: string; startingStage: Stage; advanceAmount: number; advanceMode: "cash" | "upi" | "bank" | "cheque" }) {
+    if (!id) return;
+    startTransition(async () => {
+      const res = await markQuotationWon({ quotationId: id, ...input });
+      if (res.ok) {
+        setWonOpen(false);
+        toast("Job created");
+        router.push(`/jobs/${res.jobId}`);
+      } else {
+        toast(res.error, "err");
+      }
+    });
+  }
+
   function handleLost(reason: string, note: string) {
     if (!id) return;
     startTransition(async () => {
@@ -402,14 +422,19 @@ export function QuotationBuilder({
             <Button onClick={handleWhatsapp} disabled={pending} className="col-span-2">
               {busyAction === "whatsapp" ? S.common.loading : S.actions.whatsapp}
             </Button>
-            {id && status !== "draft" && (
-              <button
-                type="button"
-                onClick={() => setLostOpen(true)}
-                className="col-span-2 text-center text-xs text-ink-faint underline mt-1"
-              >
-                {S.quotation.markLost}
-              </button>
+            {id && (status === "sent" || status === "followup") && (
+              <>
+                <Button variant="surface" onClick={() => setWonOpen(true)} className="col-span-2 text-run">
+                  {S.quotation.markWon}
+                </Button>
+                <button
+                  type="button"
+                  onClick={() => setLostOpen(true)}
+                  className="col-span-2 text-center text-xs text-ink-faint underline mt-1"
+                >
+                  {S.quotation.markLost}
+                </button>
+              </>
             )}
           </div>
         )}
@@ -434,6 +459,14 @@ export function QuotationBuilder({
       />
 
       <LostSheet open={lostOpen} onClose={() => setLostOpen(false)} onConfirm={handleLost} />
+
+      <WonSheet
+        open={wonOpen}
+        onClose={() => setWonOpen(false)}
+        today={today}
+        pending={pending}
+        onConfirm={handleMarkWon}
+      />
     </div>
   );
 }

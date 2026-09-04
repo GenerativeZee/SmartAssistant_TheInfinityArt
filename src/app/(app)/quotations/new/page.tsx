@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { QuotationBuilder } from "@/components/quotations/QuotationBuilder";
 import { createClient } from "@/lib/supabase/server";
+import { todayIST } from "@/lib/dates";
 import { S } from "@/lib/strings";
 
 export const metadata = { title: S.quotation.builder };
@@ -76,6 +77,7 @@ export default async function NewQuotationPage({
         }}
         client={client}
         services={services ?? []}
+        today={todayIST()}
         initialLines={[]}
         initialTerms={shop.quotation_terms ?? ""}
       />

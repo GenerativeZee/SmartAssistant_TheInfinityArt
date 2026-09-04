@@ -17,7 +17,7 @@ deploys to Vercel.
 | **M1** | Project, schema, RLS, seed, auth, four-tab shell | ✅ done |
 | **M2** | Clients: quick add, list, search, timeline | ✅ done |
 | **M3** | Rate card + quotation builder, PDF, WhatsApp share | ✅ done |
-| M4 | Jobs: from won quote, board, stage stepper, delivery | — |
+| **M4** | Jobs: from won quote, board, stage stepper, delivery | ✅ done |
 | M5 | Payments, receivables + ageing, receipts | — |
 | M6 | Aaj Ka Kaam, auto follow-ups, PWA install, Excel export | — |
 
