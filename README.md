@@ -1,36 +1,136 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# The Infinity Art
 
-## Getting Started
+Phone-first CRM for a design / printing / branding studio: capture clients fast,
+turn conversations into quotations and jobs, track who owes money, and get one
+"Aaj Ka Kaam" screen every morning. Full requirements in [`SPEC.md`](./SPEC.md).
 
-First, run the development server:
+**Stack:** Next.js 16 (App Router) · React 19 · Tailwind v4 · Supabase (Postgres
++ Auth + Storage, RLS) · Zod · date-fns (`Asia/Kolkata`) · installable PWA ·
+deploys to Vercel.
+
+---
+
+## Milestone status
+
+| | | |
+|---|---|---|
+| **M1** | Project, schema, RLS, seed, auth, four-tab shell | ✅ done |
+| M2 | Clients: quick add, list, search, timeline | — |
+| M3 | Rate card + quotation builder, PDF, WhatsApp share | — |
+| M4 | Jobs: from won quote, board, stage stepper, delivery | — |
+| M5 | Payments, receivables + ageing, receipts | — |
+| M6 | Aaj Ka Kaam, auto follow-ups, PWA install, Excel export | — |
+
+---
+
+## Setup
+
+### 1. Install
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Supabase
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Option A — local (needs Docker):**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npx supabase start           # prints API URL + anon key + db URL
+npx supabase db reset        # applies migrations + seed.sql
+```
 
-## Learn More
+**Option B — hosted project:**
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx supabase link --project-ref <ref>
+npx supabase db push         # applies supabase/migrations/
+# then run supabase/seed.sql once from the SQL editor or:
+#   psql "$DATABASE_URL" -f supabase/seed.sql
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. Env
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+cp .env.local.example .env.local
+# fill NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY from step 2
+```
 
-## Deploy on Vercel
+### 4. Create the owner login
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Sign up once — the first auth user is auto-linked to the seeded shop
+(`handle_new_user` trigger).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Local:** open Supabase Studio (`http://127.0.0.1:54323`) → Authentication →
+  Add user → enter email + password, tick "Auto Confirm".
+- **Hosted:** Authentication → Users → Add user.
+
+### 5. Run
+
+```bash
+npm run dev            # http://localhost:3000  -> redirects to /login
+```
+
+Log in with the user from step 4. You land on **Aaj**.
+
+---
+
+## Scripts
+
+| Script | What |
+|---|---|
+| `npm run dev` | Dev server (Turbopack) |
+| `npm run build` / `npm start` | Production build / serve |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm test` | Vitest — pricing, GST, ageing, money, numbering |
+| `npm run db:reset` | Re-apply migrations + seed (local) |
+| `npm run db:types` | Regenerate `src/lib/database.types.ts` from the local DB |
+| `npm run gen:icons` | Re-render PWA icons from `public/icons/icon.svg` |
+
+### Numbering concurrency test
+
+`tests/numbering.test.ts` needs Postgres. It skips itself when `DATABASE_URL`
+is unreachable, so `npm test` is green without Docker. To run it:
+
+```bash
+npx supabase start && npx supabase db reset
+npm test                 # DATABASE_URL is read from .env.local
+```
+
+---
+
+## Backups (§10)
+
+Nightly `pg_dump` of the whole database:
+
+```bash
+# hosted
+pg_dump "postgresql://postgres:<pwd>@db.<ref>.supabase.co:5432/postgres" \
+  --no-owner --format=custom -f "infinity-$(date +%F).dump"
+
+# local
+pg_dump "postgresql://postgres:postgres@127.0.0.1:54322/postgres" \
+  --no-owner --format=custom -f "infinity-$(date +%F).dump"
+
+# restore
+pg_restore --no-owner --clean --if-exists -d "<target-db-url>" infinity-YYYY-MM-DD.dump
+```
+
+Settings → **Export everything to Excel** (M6) is the second, in-app backup.
+
+---
+
+## Architecture notes
+
+- **Multi-tenant from day one.** Every table has `shop_id`; every RLS policy
+  checks it against `auth_shop_id()` (the caller's `profiles.shop_id`). One shop
+  exists in Phase 1; nothing about it is hardcoded — it all lives in `shops`.
+- **Document numbers** (`INF/Q/2526/0042`) come from `next_document_number()` in
+  Postgres, using `sequences` + `SELECT … FOR UPDATE`. Never generated in app code.
+- **Money** is `numeric(12,2)`; all maths in `src/lib/pricing.ts` / `money.ts`;
+  displayed via `Intl.NumberFormat('en-IN')`.
+- **"Today"** is always `Asia/Kolkata`, computed server-side (`src/lib/dates.ts`).
+- **UI strings** live in `src/lib/strings.ts` (Hinglish for actions, English for
+  data) so the language can be switched later.
+- `proxy.ts` (Next 16's renamed middleware) refreshes the Supabase session and
+  gates every route behind auth except `/login` and the manifest/icons.

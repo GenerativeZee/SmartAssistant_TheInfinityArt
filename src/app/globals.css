@@ -1,26 +1,137 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ==========================================================================
+   The Infinity Art — design tokens (§9)
+   Full light palette on :root; only tokens are overridden for dark.
+   ========================================================================== */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  /* surfaces */
+  --paper: #f4f7f8;         /* app background */
+  --surface: #ffffff;       /* cards, sheets, rows */
+  --surface-sunken: #eef2f3;
+  --hairline: #dbe3e6;      /* borders */
+
+  /* ink */
+  --ink: #0f1518;          /* primary text */
+  --ink-soft: #43525a;     /* secondary text */
+  --ink-faint: #7c8b93;    /* tertiary / captions */
+  --ink-invert: #f4f7f8;
+
+  /* one accent */
+  --accent: #0083b8;       /* process cyan */
+  --accent-ink: #ffffff;
+  --accent-wash: #e2f1f7;
+
+  /* semantic ladder — doubles as the shop's ink set */
+  --run: #0083b8;          /* running / on track */
+  --run-wash: #e2f1f7;
+  --risk: #b67a00;         /* at risk */
+  --risk-wash: #f6ecd8;
+  --owed: #c4005f;         /* overdue & money owed */
+  --owed-wash: #fbe1ec;
+  --done: #0f1518;         /* done */
+
+  --radius: 12px;
+  --tap: 44px;             /* minimum tap target */
+
+  --font-head: var(--font-archivo), "Archivo", system-ui, sans-serif;
+  --font-mono: var(--font-mono-num), "JetBrains Mono", ui-monospace, monospace;
+  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #0c1215;
+    --surface: #131c20;
+    --surface-sunken: #0f171a;
+    --hairline: #26343a;
+
+    --ink: #e8eef0;
+    --ink-soft: #a9b8be;
+    --ink-faint: #74868d;
+    --ink-invert: #0c1215;
+
+    --accent: #29a8d8;
+    --accent-ink: #04161d;
+    --accent-wash: #10333f;
+
+    --run: #29a8d8;
+    --run-wash: #10333f;
+    --risk: #d59a2a;
+    --risk-wash: #35291180;
+    --owed: #f04f92;
+    --owed-wash: #3a1327;
+    --done: #e8eef0;
   }
 }
 
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-hairline: var(--hairline);
+
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+  --color-ink-invert: var(--ink-invert);
+
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-wash: var(--accent-wash);
+
+  --color-run: var(--run);
+  --color-run-wash: var(--run-wash);
+  --color-risk: var(--risk);
+  --color-risk-wash: var(--risk-wash);
+  --color-owed: var(--owed);
+  --color-owed-wash: var(--owed-wash);
+  --color-done: var(--done);
+
+  --font-head: var(--font-head);
+  --font-mono: var(--font-mono);
+  --font-sans: var(--font-body);
+
+  --radius-card: var(--radius);
+}
+
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100%;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* every number, amount, date, doc number aligns on this */
+.num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: -0.01em;
+}
+
+h1, h2, h3, .head {
+  font-family: var(--font-head);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+/* respect the notch / home indicator on installed PWA */
+.safe-b { padding-bottom: env(safe-area-inset-bottom); }
+.safe-t { padding-top: env(safe-area-inset-top); }
+
+* { -webkit-tap-highlight-color: transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
 }
