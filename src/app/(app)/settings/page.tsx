@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ScreenHeader } from "@/components/ui/ScreenHeader";
 import { createClient, getProfile } from "@/lib/supabase/server";
 import { signOut } from "@/app/(auth)/login/actions";
@@ -36,6 +37,14 @@ export default async function SettingsPage() {
             </div>
           ))}
         </div>
+
+        <Link
+          href="/quotations"
+          className="mt-4 flex items-center justify-between rounded-[var(--radius-card)] border border-hairline bg-surface px-4 py-3 text-sm text-ink"
+        >
+          All quotations
+          <span className="text-ink-faint">→</span>
+        </Link>
 
         <p className="mt-4 text-xs text-ink-faint">
           Full editing, logo upload, the rate card editor and the Excel export are coming soon.

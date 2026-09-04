@@ -35,12 +35,12 @@ export default async function ClientDetailPage({
         .order("occurred_at", { ascending: false }),
       supabase
         .from("quotations")
-        .select("number, status, total, created_at")
+        .select("id, number, status, total, created_at")
         .eq("client_id", id)
         .order("created_at", { ascending: false }),
       supabase
         .from("jobs")
-        .select("number, title, stage, created_at")
+        .select("id, number, title, stage, created_at")
         .eq("client_id", id)
         .order("created_at", { ascending: false }),
       supabase
@@ -60,6 +60,7 @@ export default async function ClientDetailPage({
     })),
     ...(quotations ?? []).map((q): TimelineEvent => ({
       kind: "quotation",
+      id: q.id,
       at: q.created_at,
       number: q.number,
       status: q.status,
@@ -67,6 +68,7 @@ export default async function ClientDetailPage({
     })),
     ...(jobs ?? []).map((j): TimelineEvent => ({
       kind: "job",
+      id: j.id,
       at: j.created_at,
       number: j.number,
       title: j.title,
@@ -133,7 +135,7 @@ export default async function ClientDetailPage({
         </div>
       </div>
 
-      <NewActionButtons />
+      <NewActionButtons clientId={client.id} />
 
       <div className="mt-2">
         <h2 className="px-4 pt-4 pb-1 text-xs font-semibold uppercase tracking-wide text-ink-faint">
