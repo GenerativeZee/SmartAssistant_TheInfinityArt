@@ -18,11 +18,11 @@ describe("ageing bucket boundaries (§6.6, D4)", () => {
     expect(ageingBucket(365)).toBe(2);
   });
 
-  it("labels: the third bucket reads \"30+ din\"", () => {
-    expect(ageingLabel(10)).toBe("0–15 din");
-    expect(ageingLabel(20)).toBe("16–30 din");
-    expect(ageingLabel(45)).toBe("30+ din");
-    expect(ageingLabel(null)).toBe("Delivery baaki");
+  it('labels: the third bucket reads "30+ days" (D15: English UI)', () => {
+    expect(ageingLabel(10)).toBe("0–15 days");
+    expect(ageingLabel(20)).toBe("16–30 days");
+    expect(ageingLabel(45)).toBe("30+ days");
+    expect(ageingLabel(null)).toBe("Not yet delivered");
   });
 });
 

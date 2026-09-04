@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { normalizePhone, isValidPhone } from "@/lib/phone";
+import { uuidLike } from "./common";
 
 export const REQUIREMENT_KEYS = [
   "signage",
@@ -26,7 +27,7 @@ export const quickAddSchema = z.object({
   followUpDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   voiceUrl: z.string().url().optional(),
   /** set when the phone matched an existing client on blur */
-  existingClientId: z.string().uuid().optional(),
+  existingClientId: uuidLike.optional(),
 });
 
 export type QuickAddInput = z.input<typeof quickAddSchema>;

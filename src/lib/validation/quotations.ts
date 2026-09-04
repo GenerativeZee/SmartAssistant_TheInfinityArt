@@ -1,7 +1,8 @@
 import { z } from "zod";
+import { uuidLike } from "./common";
 
 export const lineItemSchema = z.object({
-  serviceId: z.string().uuid().nullable().optional(),
+  serviceId: uuidLike.nullable().optional(),
   description: z.string().trim().min(1, "Describe this line").max(200),
   unit: z.enum(["sqft", "piece", "box", "job", "hour"]),
   qty: z.coerce.number().positive().max(100000),
@@ -13,7 +14,7 @@ export const lineItemSchema = z.object({
 export type LineItemInput = z.infer<typeof lineItemSchema>;
 
 export const quotationInputSchema = z.object({
-  clientId: z.string().uuid(),
+  clientId: uuidLike,
   items: z.array(lineItemSchema).min(1, "Add at least one item"),
   discount: z.coerce.number().min(0).default(0),
   notes: z.string().trim().max(2000).optional().nullable(),
@@ -27,7 +28,7 @@ export const quotationInputSchema = z.object({
 export type QuotationInput = z.infer<typeof quotationInputSchema>;
 
 export const lostSchema = z.object({
-  id: z.string().uuid(),
+  id: uuidLike,
   reason: z.enum(["price", "timeline", "no_response", "went_elsewhere", "cancelled_project", "other"]),
   note: z.string().trim().max(500).optional(),
 });
