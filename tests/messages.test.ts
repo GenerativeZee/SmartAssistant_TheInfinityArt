@@ -12,7 +12,7 @@ describe("message templates — default text (§7)", () => {
   });
 
   it("receipt", () => {
-    const msg = templates.receipt({ amount: 5000, balance: 0, link: "https://x/r.pdf" });
+    const msg = templates.receipt({ ...ctx, amount: 5000, balance: 0, link: "https://x/r.pdf" });
     expect(msg).toContain("₹5,000");
     expect(msg).toContain("https://x/r.pdf");
   });
@@ -29,18 +29,18 @@ describe("message templates — shop overrides (Settings → Message templates)"
   });
 
   it("falls back to the default when no override is stored", () => {
-    const withUndefined = templates.receipt({ amount: 100, balance: 0, link: "L" }, undefined);
-    const withoutArg = templates.receipt({ amount: 100, balance: 0, link: "L" });
+    const withUndefined = templates.receipt({ ...ctx, amount: 100, balance: 0, link: "L" }, undefined);
+    const withoutArg = templates.receipt({ ...ctx, amount: 100, balance: 0, link: "L" });
     expect(withUndefined).toBe(withoutArg);
   });
 
   it("falls back to the default when the override is an empty string", () => {
-    const msg = templates.receipt({ amount: 100, balance: 0, link: "L" }, "");
-    expect(msg).toBe(templates.receipt({ amount: 100, balance: 0, link: "L" }));
+    const msg = templates.receipt({ ...ctx, amount: 100, balance: 0, link: "L" }, "");
+    expect(msg).toBe(templates.receipt({ ...ctx, amount: 100, balance: 0, link: "L" }));
   });
 
   it("leaves an unknown placeholder untouched rather than dropping it silently", () => {
-    const msg = templates.receipt({ amount: 100, balance: 0, link: "L" }, "Amount: {amount}, oops {nope}");
+    const msg = templates.receipt({ ...ctx, amount: 100, balance: 0, link: "L" }, "Amount: {amount}, oops {nope}");
     expect(msg).toBe("Amount: ₹100, oops {nope}");
   });
 
