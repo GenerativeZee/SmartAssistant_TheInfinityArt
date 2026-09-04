@@ -18,7 +18,12 @@ export default async function JobDetailPage({
 
   const [{ data: client }, { data: shop }, { data: financials }, { data: attachments }] = await Promise.all([
     supabase.from("clients").select("id, name, company, phone").eq("id", job.client_id).single(),
-    supabase.from("shops").select("default_greeting, name").single(),
+    supabase
+      .from("shops")
+      .select(
+        "name, address, city, state, pincode, phone, email, gstin, upi_id, built_by_credit, default_greeting",
+      )
+      .single(),
     supabase.from("job_financials").select("*").eq("job_id", id).maybeSingle(),
     supabase
       .from("attachments")
@@ -46,7 +51,19 @@ export default async function JobDetailPage({
           notes: job.notes,
         }}
         client={client}
-        shop={{ defaultGreeting: shop.default_greeting, name: shop.name }}
+        shop={{
+          name: shop.name,
+          address: shop.address,
+          city: shop.city,
+          state: shop.state,
+          pincode: shop.pincode,
+          phone: shop.phone,
+          email: shop.email,
+          gstin: shop.gstin,
+          upiId: shop.upi_id,
+          builtByCredit: shop.built_by_credit,
+          defaultGreeting: shop.default_greeting,
+        }}
         financials={{
           total: Number(financials?.total_amount ?? job.total_amount),
           received: Number(financials?.received ?? 0),

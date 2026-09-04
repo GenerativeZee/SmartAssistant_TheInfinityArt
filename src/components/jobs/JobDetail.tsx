@@ -9,6 +9,7 @@ import { DeliverySheet } from "./DeliverySheet";
 import { CancelJobSheet } from "./CancelJobSheet";
 import { AttachmentsBlock, type AttachmentItem } from "./AttachmentsBlock";
 import { WaPreview } from "@/components/whatsapp/WaPreview";
+import { PaymentSheet } from "@/components/paisa/PaymentSheet";
 import { useToast } from "@/components/ui/Toast";
 import { advanceJobStage, deliverJob, cancelJob } from "@/lib/actions/jobs";
 import { formatMoney } from "@/lib/money";
@@ -27,7 +28,19 @@ interface JobDetailProps {
     notes: string | null;
   };
   client: { id: string; name: string; company: string | null; phone: string | null };
-  shop: { defaultGreeting: string; name: string };
+  shop: {
+    name: string;
+    address: string | null;
+    city: string | null;
+    state: string | null;
+    pincode: string | null;
+    phone: string | null;
+    email: string | null;
+    gstin: string | null;
+    upiId: string | null;
+    builtByCredit: string | null;
+    defaultGreeting: string;
+  };
   financials: { total: number; received: number; balance: number };
   attachments: AttachmentItem[];
   isLate: boolean;
@@ -43,6 +56,7 @@ export function JobDetail({ job, client, shop, financials, attachments, isLate }
   const [cancelOpen, setCancelOpen] = useState(false);
   const [waOpen, setWaOpen] = useState(false);
   const [waMessage, setWaMessage] = useState("");
+  const [paymentOpen, setPaymentOpen] = useState(false);
 
   function onStepTap(stage: Stage) {
     if (stage === job.stage) return;
@@ -138,6 +152,16 @@ export function JobDetail({ job, client, shop, financials, attachments, isLate }
         <Stat label={S.job.balance} value={financials.balance} tone={financials.balance > 0 ? "owed" : undefined} />
       </div>
 
+      {financials.balance > 0 && (
+        <button
+          type="button"
+          onClick={() => setPaymentOpen(true)}
+          className="min-h-[var(--tap)] rounded-[var(--radius-card)] border border-hairline bg-surface text-ink font-medium"
+        >
+          {S.paisa.addPayment}
+        </button>
+      )}
+
       <AttachmentsBlock jobId={job.id} items={attachments} />
 
       {client.phone && (
@@ -177,6 +201,14 @@ export function JobDetail({ job, client, shop, financials, attachments, isLate }
       />
       <CancelJobSheet open={cancelOpen} onClose={() => setCancelOpen(false)} pending={pending} onConfirm={confirmCancel} />
       <WaPreview open={waOpen} onClose={() => setWaOpen(false)} phone={client.phone} message={waMessage} />
+
+      <PaymentSheet
+        open={paymentOpen}
+        onClose={() => setPaymentOpen(false)}
+        shop={shop}
+        presetClient={{ id: client.id, name: client.name, company: client.company, phone: client.phone }}
+        presetJob={{ id: job.id, number: job.number, title: job.title, balance: financials.balance }}
+      />
     </div>
   );
 }

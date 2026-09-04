@@ -97,9 +97,10 @@ export async function deliverJob(raw: unknown): Promise<ActionResult> {
 
   await recordStageEvent(jobId, "delivered", note, job.stage);
 
-  const { error } = await supabase.from("jobs").update({ stage: "delivered" }).eq("id", jobId);
-  if (error) return { ok: false, error: error.message };
-
+  // Record the payment *before* flipping the stage: the M1 trigger that fires
+  // on the stage change computes the remaining balance in the same instant,
+  // so a payment inserted afterwards would leave a "payment reminder"
+  // follow-up nagging about money that was, in fact, already collected.
   if (finalAmount > 0) {
     await supabase.from("payments").insert({
       shop_id: job.shop_id,
@@ -113,6 +114,9 @@ export async function deliverJob(raw: unknown): Promise<ActionResult> {
       created_by: profile.id,
     });
   }
+
+  const { error } = await supabase.from("jobs").update({ stage: "delivered" }).eq("id", jobId);
+  if (error) return { ok: false, error: error.message };
 
   revalidatePath("/jobs");
   revalidatePath(`/jobs/${jobId}`);
