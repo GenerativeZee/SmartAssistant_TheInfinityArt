@@ -99,6 +99,37 @@ npm test                 # DATABASE_URL is read from .env.local
 
 ---
 
+## Deploying (Vercel + a Marketplace-provisioned Supabase)
+
+If Supabase was installed via the **Vercel Marketplace integration** (Storage tab
+→ Supabase), the resulting project is managed through Vercel, not your own
+Supabase.com account — `supabase link` / `supabase db push` will fail with a
+permissions error even with a valid personal access token. Push the schema
+straight to Postgres instead, using the pooled connection string Vercel's
+Storage tab shows you (`POSTGRES_URL` / the integration's "Connect" panel):
+
+```bash
+DATABASE_URL="postgres://...pooler.supabase.com:6543/postgres" node scripts/run-remote-sql.mjs migrations
+DATABASE_URL="postgres://...pooler.supabase.com:6543/postgres" node scripts/run-remote-sql.mjs seed   # optional
+```
+
+Then create the owner login the supported way — the GoTrue Admin API, using
+the **`service_role`** key from the same Storage panel (never craft
+`auth.users`/`auth.identities` rows by hand; hosted GoTrue's internal session
+queries expect state a raw INSERT won't reliably reproduce):
+
+```bash
+curl -X POST "https://<ref>.supabase.co/auth/v1/admin/users" \
+  -H "apikey: <service_role key>" -H "Authorization: Bearer <service_role key>" \
+  -H "Content-Type: application/json" \
+  -d '{"email":"owner@example.com","password":"...","email_confirm":true}'
+```
+
+Finally, confirm Vercel's env vars are named exactly `NEXT_PUBLIC_SUPABASE_URL`
+and `NEXT_PUBLIC_SUPABASE_ANON_KEY` (the app reads those literal names — see
+`src/lib/env.ts`); the Marketplace integration may only add `SUPABASE_URL`
+(no `NEXT_PUBLIC_` prefix), which the browser bundle can't see.
+
 ## Backups (§10)
 
 Nightly `pg_dump` of the whole database:
