@@ -38,16 +38,32 @@ export default async function SettingsPage() {
           ))}
         </div>
 
-        <Link
-          href="/quotations"
-          className="mt-4 flex items-center justify-between rounded-[var(--radius-card)] border border-hairline bg-surface px-4 py-3 text-sm text-ink"
-        >
-          All quotations
-          <span className="text-ink-faint">→</span>
-        </Link>
+        <div className="mt-4 flex flex-col gap-2">
+          <Link
+            href="/quotations"
+            className="flex items-center justify-between rounded-[var(--radius-card)] border border-hairline bg-surface px-4 py-3 text-sm text-ink"
+          >
+            All quotations
+            <span className="text-ink-faint">→</span>
+          </Link>
+          <Link
+            href="/settings/rate-card"
+            className="flex items-center justify-between rounded-[var(--radius-card)] border border-hairline bg-surface px-4 py-3 text-sm text-ink"
+          >
+            {S.settings.rateCard}
+            <span className="text-ink-faint">→</span>
+          </Link>
+          <a
+            href="/api/export"
+            className="flex items-center justify-between rounded-[var(--radius-card)] border border-hairline bg-surface px-4 py-3 text-sm text-ink"
+          >
+            {S.settings.exportExcel}
+            <span className="text-ink-faint">↓</span>
+          </a>
+        </div>
 
         <p className="mt-4 text-xs text-ink-faint">
-          Full editing, logo upload, the rate card editor and the Excel export are coming soon.
+          Full profile editing, logo upload and message-template editing are coming soon.
         </p>
 
         <form action={signOut} className="mt-8">

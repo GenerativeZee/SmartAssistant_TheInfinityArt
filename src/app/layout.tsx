@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Archivo, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { S } from "@/lib/strings";
+import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
 
 const archivo = Archivo({
   subsets: ["latin"],
@@ -18,12 +19,12 @@ const mono = JetBrains_Mono({
 export const metadata: Metadata = {
   applicationName: S.appName,
   title: { default: S.appName, template: `%s · ${S.appName}` },
-  description: "Client, quotation, job aur paisa — sab ek jagah.",
+  description: "Clients, quotations, jobs and payments — in one place.",
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, statusBarStyle: "default", title: S.appName },
   icons: {
     icon: "/icons/icon-192.png",
-    apple: "/icons/icon-192.png",
+    apple: "/icons/apple-touch-icon.png",
   },
 };
 
@@ -41,7 +42,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${archivo.variable} ${mono.variable} h-full`}>
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        {children}
+        <ServiceWorkerRegister />
+      </body>
     </html>
   );
 }

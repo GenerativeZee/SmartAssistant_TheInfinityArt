@@ -12,6 +12,12 @@ deploys to Vercel.
 
 ## Milestone status
 
+**Phase 1 (M1–M6) is complete.** One gap called out from the spec: full
+Settings editing beyond the rate card — shop-profile editing, logo upload,
+message-template editing — was never assigned to a milestone and is still
+"coming soon." Everything else in §12's acceptance checklist is built and
+verified against the live database.
+
 | | | |
 |---|---|---|
 | **M1** | Project, schema, RLS, seed, auth, four-tab shell | ✅ done |
@@ -19,7 +25,7 @@ deploys to Vercel.
 | **M3** | Rate card + quotation builder, PDF, WhatsApp share | ✅ done |
 | **M4** | Jobs: from won quote, board, stage stepper, delivery | ✅ done |
 | **M5** | Payments, receivables + ageing, receipts | ✅ done |
-| M6 | Aaj Ka Kaam, auto follow-ups, PWA install, Excel export | — |
+| **M6** | Aaj Ka Kaam, auto follow-ups, PWA install, Excel export, rate card editor | ✅ done |
 
 ---
 
